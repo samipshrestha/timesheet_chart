@@ -1,0 +1,15 @@
+.main-wrapper{
+    width: 1220px;
+    margin: 20px auto 0;
+}
+
+h2{
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+canvas{
+    /*border: 1px solid #B4ADAD;*/
+    margin: 0 auto;
+    background: #333;
+}
