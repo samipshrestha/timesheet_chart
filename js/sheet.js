@@ -2,13 +2,13 @@
     'use-strict';
 
 /**
- * [drawLineGraph description]
- * @param  {[type]} ctx  [description]
- * @param  {[type]} data [description]
- * @return {[type]}      [description]
+ * [drawLineGraph draws TimeSheet]
+ * @param  {[type]} ctx  [canvas in DOM]
+ * @param  {[type]} data [data of events]
  */
-    $.fn.drawLineGraph = function(ctx, data) {
+    $.fn.drawLineGraph = function(canvas, ctx, data) {
         var dataLength = 0,
+        startX,startY,stopX,stopY,lineWidth,color,font,text,lineStyle
         fullMonths = [ "January", "February", "March", "April", "May", "June", 
                "July", "August", "September", "October", "November", "December" ];
 
@@ -17,24 +17,17 @@
         });
 
         // Draw horizontal line
-        for (var i = 0; i < 1; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, (i+1)*1);
-            ctx.lineTo(1220, (i+1)*1);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#fff';
-            ctx.stroke();
-        };
+        drawLineFunction(ctx,0,0,1220,0);
 
         // Draw vertical line
         for(var i=0; i<=data.months.length; i++){
+            startX = (i)*(100);
+            startY = 1;
+            stopX = (i)*(100);
+            stopY = canvas.width;
+            color = '#B4ADAD';
             ctx.setLineDash([1, 10]); // Make Dashed line (line length, space length)
-            ctx.beginPath();
-            ctx.moveTo((i)*(100), 1);
-            ctx.lineTo((i)*(100), 500);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#B4ADAD';
-            ctx.stroke();
+            drawLineFunction(ctx,startX,startY,stopX,stopY,color);
         }
         
         // Make line with no dash
@@ -43,42 +36,57 @@
         //fill month on every 100 point horizontally
         var months = $.makeArray(data.months);//converts object to array
         $.each(months, function(index, value) {
-            ctx.beginPath();
-            ctx.font = "20px Calibri";
-            ctx.fillStyle = '#E7EBEB';
-            ctx.fillText(value, (index * 100)+40, 20);
+            text = value;
+            startX = (index * 100)+40;
+            startY = 20;
+            fillTextFunction(ctx, text, startX, startY );
         });
 
         // Start plotting line
-          ctx.globalAlpha = 1 ;
+          // ctx.globalAlpha = 1 ; // opacity of canvas line
         for (var i = 1; i < dataLength; i++) {
-            // debugger;
-            var category = data['topic'+i];
-            if(category.start < 1 || category.start > 12 ){
-                ctx.font = "20px Calibri";
-                ctx.fillText(category.title + ' (Invalid start date) ', 50, (i*80)-20 );
+            var category = data['event'+i];
+
+            if(category.startmonth < 1 || category.startmonth > 12 ){
+                text = category.title + ' (Invalid start month) ';
+                startX = 50;
+                startY = (i*80)-20;
+                fillTextFunction(ctx, text, startX, startY);
             }
 
-            else if(category.end < 1 || category.end > 12 ){
-                ctx.font = "20px Calibri";
-                ctx.fillText( category.title + ' (Invalid end date) ', 50, (i*80)-20 );
+            else if(category.endmonth < 1 || category.endmonth > 12 ){
+                text = category.title + ' (Invalid start month) ';
+                startX = 50;
+                startY = (i*80)-20;
+                fillTextFunction(ctx, text, startX, startY);
             }
 
             else{
-                ctx.beginPath();
-                ctx.moveTo( (category.start-1)*100+5, i*80);
-                ctx.lineTo( (category.end)*100-5, i*80);
-                ctx.lineWidth = 10;
-                ctx.strokeStyle = pastelColors(80); //provide value from 0-255
-                ctx.lineCap = 'round';
-                ctx.stroke();
 
-                ctx.fillStyle = '#E7EBEB';
-                ctx.fillText( category.title + ' ( ' + months[category.start-1] + ' - ' + months[category.end-1] + ' )', (category.start-1)*100 + (category.end-category.start)*40, (i*80)-20);
-
+                // Draw Line Graph
+                startX = (category.startmonth-1)*100+5;
+                startY = i*70;
+                stopX = (category.endmonth)*100-5;
+                stopY = i*70;
+                color = pastelColors(80);
+                lineWidth = 10;
+                lineStyle = 'round';
+                drawLineFunction(ctx, startX, startY, stopX, stopY, color, lineWidth, lineStyle);
+                
+                // Fill event text
+                text = category.title + ' ( ' + months[category.startmonth-1] + ' - ' + months[category.endmonth-1] + ' )';
+                startX = (category.startmonth-1)*100 + (category.endmonth-category.startmonth)*40;
+                startY = (i*70)-20;
+                font = "16px Calibri";
+                fillTextFunction(ctx, text, startX, startY, font, color);
             }
         };
 
+        /**
+         * [pastelColors generates random color]
+         * @param  {[type]} brightness [brightness level of color 0-255]
+         * @return {[type]}            [hash value of color]
+         */
         function pastelColors(brightness){
             function randomChannel(brightness){
             var r = 255-brightness;
@@ -92,19 +100,19 @@
 
 /**
 * [heading creates heading tag]
-* @param  {[type]} options [description]
-* @return {[type]}         [description]
+* @param  {[type]} options [set of options in array]
 */
     $.fn.heading = function(options) {
-        var settings = $.extend({
+        var date = new Date(),
+        settings = $.extend({
             text: 'Hello, World!',
             color: null,
             fontStyle: null,
-            //complete: null
+            year: date.getFullYear()
         }, options);
 
         return this.each(function() {
-            $(this).text(settings.text);
+            $(this).text(settings.text + ' ' + settings.year);
 
             if (settings.color) {
                 $(this).css('color', settings.color);
@@ -114,6 +122,52 @@
                 $(this).css('font-style', settings.fontStyle);
             }
         });
+    }
+
+/**
+ * [drawLineFunction draws a line in canvas]
+ * @param  {[type]} ctx       [canvas in DOM]
+ * @param  {[type]} startX    [starting x-point for line]
+ * @param  {[type]} startY    [starting y-point for line]
+ * @param  {[type]} stopX     [stoping x-point for line]
+ * @param  {[type]} stopY     [stoping x-point for line]
+ * @param  {[type]} color     [color of line]
+ * @param  {[type]} lineWidth [width of the line]
+ * @param  {[type]} lineStyle [butt= rectangle, round = curved corner, square = non-curved corner]
+ * @return {[type]}           [line in canvas]
+ */
+    function drawLineFunction(ctx, startX, startY, stopX, stopY, color, lineWidth, lineStyle){
+        lineWidth = typeof lineWidth !== 'undefined' ? lineWidth : 1;
+        color = typeof color !== 'undefined' ? color : '#fff';
+        lineStyle = typeof lineStyle !== 'undefined' ? lineStyle : 'butt';
+
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(stopX, stopY);
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = lineStyle;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+    }
+
+/**
+ * [fillTextFunction draws text on canvas]
+ * @param  {[type]} ctx    [canvas in DOM]
+ * @param  {[type]} text   [text to be drawn]
+ * @param  {[type]} startX [start x-position for text]
+ * @param  {[type]} startY [start y-position for text]
+ * @param  {[type]} font   [font style and family]
+ * @param  {[type]} color  [color of font]
+ * @return {[type]}        [text in canvas]
+ */
+    function fillTextFunction(ctx, text, startX, startY, font, color){
+        font = typeof font !== 'undefined' ? font : "20px Calibri";
+        color = typeof color !== 'undefined' ? color : '#E7EBEB';
+
+        ctx.beginPath();
+        ctx.font = font;
+        ctx.fillStyle = color;
+        ctx.fillText(text, startX, startY);
     }
 
 }(jQuery));

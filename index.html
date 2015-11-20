@@ -6,69 +6,14 @@
         <meta name="viewport" content="width=device-width">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script type="text/javascript" src="js/sheet.js"></script>
+        <script src="js/main.js"></script>
         <link rel="stylesheet" href="css/timesheet.css">
-
-        <style>
-            body{
-                background: #6A6868;
-            }
-
-            *{
-                padding: 0;
-                margin: 0;
-            }
-
-        </style>
     </head>
     <body>
         <div class="main-wrapper">
             <h2>Timesheet Chart</h2>
-            <canvas id="mycanvas" width='1220' height='500'>
+            <canvas id="myCanvas" width='1220' height='500'>
             </canvas>
         </div>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('h2').heading({
-                    text: 'TIMESHEET CHART for 2015',
-                    color: '#FF9112',
-                    fontStyle: 'italic',
-                });
-
-                var ctx = $('#mycanvas').get(0).getContext("2d");
-                ctx.clearRect(0,0,1100,500);
-                var data = {
-                    months : ["Jan", "Feb", "Mar", "Apr", "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-                    topic1: {
-                        title: 'javascript',
-                        start : '1',
-                        end : '3'
-                    },
-
-                    topic2: {
-                        title: 'php',
-                        start : '3',
-                        end : '5'
-                    },
-                    topic3: {
-                        title: 'KSS',
-                        start : '1',
-                        end : '1'
-                    },
-
-                    topic4: {
-                        title: 'Outing',
-                        start : '06',
-                        end : '06'
-                    },
-
-                    topic5: {
-                        title: 'Goal Setup',
-                        start : '08',
-                        end : '12'
-                    }
-               }
-               $('#mycanvas').drawLineGraph(ctx, data);
-            });
-        </script>
     </body>
 </html>

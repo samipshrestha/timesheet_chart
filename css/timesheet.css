@@ -1,3 +1,12 @@
+body{
+    background: #6A6868;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
 .main-wrapper{
     width: 1220px;
     margin: 20px auto 0;
