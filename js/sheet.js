@@ -1,6 +1,9 @@
 ;(function($) {
     'use-strict';
 
+    var date = new Date(),
+    currentYear = date.getFullYear();
+
 /**
  * [drawLineGraph draws TimeSheet]
  * @param  {[type]} ctx  [canvas in DOM]
@@ -9,22 +12,29 @@
     $.fn.drawLineGraph = function(canvas, ctx, data) {
         var dataLength = 0,
         startX,startY,stopX,stopY,lineWidth,color,font,text,lineStyle
-        fullMonths = [ "January", "February", "March", "April", "May", "June", 
-               "July", "August", "September", "October", "November", "December" ];
+        daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
         $.each(data, function() {
             dataLength++;
         });
 
+        canvasHeight = dataLength*70;
+        console.log(dataLength);
+        $('#myCanvas').attr('height', canvasHeight);
+
         // Draw horizontal line
-        drawLineFunction(ctx,0,0,1220,0);
+        startX = 0;
+        startY = 0;
+        stopX = canvas.width;
+        stopY = 0;
+        drawLineFunction(ctx,startX,startY,stopX,stopY);
 
         // Draw vertical line
         for(var i=0; i<=data.months.length; i++){
             startX = (i)*(100);
             startY = 1;
             stopX = (i)*(100);
-            stopY = canvas.width;
+            stopY = canvas.height;
             color = '#B4ADAD';
             ctx.setLineDash([1, 10]); // Make Dashed line (line length, space length)
             drawLineFunction(ctx,startX,startY,stopX,stopY,color);
@@ -33,7 +43,7 @@
         // Make line with no dash
         ctx.setLineDash([1, 0]);
         
-        //fill month on every 100 point horizontally
+        //plot months
         var months = $.makeArray(data.months);//converts object to array
         $.each(months, function(index, value) {
             text = value;
@@ -45,16 +55,19 @@
         // Start plotting line
           // ctx.globalAlpha = 1 ; // opacity of canvas line
         for (var i = 1; i < dataLength; i++) {
-            var category = data['event'+i];
+            var category = data['event'+i],
 
-            if(category.startmonth < 1 || category.startmonth > 12 ){
+            startDay = category.startDate.split('/');
+            endDay = category.endDate.split('/');
+
+            if(startDay[1] < 1 || startDay[1] > 12 ){
                 text = category.title + ' (Invalid start month) ';
                 startX = 50;
                 startY = (i*80)-20;
                 fillTextFunction(ctx, text, startX, startY);
             }
 
-            else if(category.endmonth < 1 || category.endmonth > 12 ){
+            else if(endDay[1] < 1 || endDay[1] > 12 ){
                 text = category.title + ' (Invalid start month) ';
                 startX = 50;
                 startY = (i*80)-20;
@@ -62,23 +75,39 @@
             }
 
             else{
+                // debugger;
+                if( currentYear >= startDay[2] && currentYear <= endDay[2] ){
+                    // Draw Line Graph
+                    if(startDay[2] == currentYear){
+                        startX = (startDay[1]-1)*100+2+(startDay[0]/daysInMonth[startDay[1]-1]*100);
+                    }
 
-                // Draw Line Graph
-                startX = (category.startmonth-1)*100+5;
-                startY = i*70;
-                stopX = (category.endmonth)*100-5;
-                stopY = i*70;
-                color = pastelColors(80);
-                lineWidth = 10;
-                lineStyle = 'round';
-                drawLineFunction(ctx, startX, startY, stopX, stopY, color, lineWidth, lineStyle);
-                
-                // Fill event text
-                text = category.title + ' ( ' + months[category.startmonth-1] + ' - ' + months[category.endmonth-1] + ' )';
-                startX = (category.startmonth-1)*100 + (category.endmonth-category.startmonth)*40;
-                startY = (i*70)-20;
-                font = "16px Calibri";
-                fillTextFunction(ctx, text, startX, startY, font, color);
+                    else{
+                        startX = 2;
+                    }
+
+                    if(endDay[2] == currentYear){
+                        stopX = (endDay[1]-1)*100-4+(endDay[0]/daysInMonth[endDay[1]-1]*100);
+                    }
+
+                    else{
+                        stopX = 100*12;
+                    }
+
+                    startY = i*70;
+                    stopY = i*70;
+                    color = pastelColors(80);
+                    lineWidth = 10;
+                    lineStyle = 'round';
+                    drawLineFunction(ctx, startX, startY, stopX, stopY, color, lineWidth, lineStyle);
+                    
+                    // Fill event text
+                    text = category.title + ' ( ' + startDay[0] +' ' + months[startDay[1]-1] + ' - ' + endDay[0] +' '  + months[endDay[1]-1] + ' )';
+                    startX = (startDay[1]-1)*100 + (endDay[1]-startDay[1])*40;
+                    startY = (i*70)-20;
+                    font = "16px Calibri";
+                    fillTextFunction(ctx, text, startX, startY, font, color);
+                }   
             }
         };
 
@@ -103,8 +132,7 @@
 * @param  {[type]} options [set of options in array]
 */
     $.fn.heading = function(options) {
-        var date = new Date(),
-        settings = $.extend({
+        var settings = $.extend({
             text: 'Hello, World!',
             color: null,
             fontStyle: null,

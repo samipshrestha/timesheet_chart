@@ -14,43 +14,42 @@
             months : ["Jan", "Feb", "Mar", "Apr", "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
             event1: {
                 title: 'javascript',
-                startmonth : '1',
-                endmonth : '3',
-                startYear : '2011',
-                endYear : '2011',
+                startDate : '8/1/2015',
+                endDate : '31/3/2015'
+            },
+             event2: {
+                title: 'javascript',
+                startDate : '20/2/2015',
+                endDate : '31/4/2015'
+            },
+             event3: {
+                title: 'javascript',
+                startDate : '2/2/2015',
+                endDate : '28/3/2015'
+            },
+             event4: {
+                title: 'javascript',
+                startDate : '1/1/2015',
+                endDate : '28/2/2015'
+            },
+             event5: {
+                title: 'javascript',
+                startDate : '1/1/2015',
+                endDate : '28/2/2015'
+            },
+             event6: {
+                title: 'javascript',
+                startDate : '1/1/2015',
+                endDate : '28/2/2015'
+            },
+             event7: {
+                title: 'javascript',
+                startDate : '1/1/2015',
+                endDate : '28/2/2015'
             },
 
-            event2: {
-                title: 'php',
-                startmonth : '3',
-                endmonth : '5',
-                startYear : '2011',
-                endYear : '2011',
-            },
-            event3: {
-                title: 'KSS',
-                startmonth : '1',
-                endmonth : '1',
-                startYear : '2011',
-                endYear : '2011',
-            },
 
-            event4: {
-                title: 'Outing',
-                startmonth : '06',
-                endmonth : '06',
-                startYear : '2011',
-                endYear : '2011',
-            },
-
-            event5: {
-                title: 'Goal Setup',
-                startmonth : '08',
-                endmonth : '12',
-                startYear : '2011',
-                endYear : '2011',
-            }
        }
-       $('#mycanvas').drawLineGraph(canvas,ctx, data);
+       $('#myCanvas').drawLineGraph(canvas,ctx, data);
     });
 })();
