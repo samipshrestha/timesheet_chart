@@ -2,14 +2,12 @@
     'use strict';
 
     $(document).ready(function() {
-        $('h2').heading({
+        var headingOptions = {
             text: 'TIMESHEET CHART for ',
             color: '#FF9112',
             fontStyle: 'italic',
-        });
-        var canvas = document.getElementById('myCanvas');
-        var ctx = $('#myCanvas').get(0).getContext("2d");
-        ctx.clearRect(0,0,1100,500);
+        };
+
         var data = {
             months : ["Jan", "Feb", "Mar", "Apr", "May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
             event1: {
@@ -19,13 +17,13 @@
             },
              event2: {
                 title: 'javascript',
-                startDate : '20/2/2015',
-                endDate : '31/4/2015'
+                startDate : '28/2/2011',
+                endDate : '30/4/2015'
             },
              event3: {
                 title: 'javascript',
-                startDate : '2/2/2015',
-                endDate : '28/3/2015'
+                startDate : '1/2/2011',
+                endDate : '28/3/2011'
             },
              event4: {
                 title: 'javascript',
@@ -47,9 +45,7 @@
                 startDate : '1/1/2015',
                 endDate : '28/2/2015'
             },
-
-
        }
-       $('#myCanvas').drawLineGraph(canvas,ctx, data);
+       $('#myCanvas').drawLineGraph(data, headingOptions);
     });
 })();
